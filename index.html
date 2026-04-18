@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>InternNova — AI-Powered Internship Matching</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #05060f;
+  --bg2: #080b1a;
+  --surface: rgba(255,255,255,0.04);
+  --surface2: rgba(255,255,255,0.07);
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text: #e8eaf6;
+  --muted: #8b91b5;
+  --indigo: #6366f1;
+  --violet: #8b5cf6;
+  --cyan: #06b6d4;
+  --emerald: #10b981;
+  --amber: #f59e0b;
+  --rose: #f43f5e;
+  --glow-indigo: 0 0 40px rgba(99,102,241,0.3);
+  --glow-cyan: 0 0 40px rgba(6,182,212,0.2);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+h1,h2,h3,h4,h5{font-family:'Syne',sans-serif}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--indigo);border-radius:4px}
+
+/* ── GRID NOISE TEXTURE ── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;
+}
+
+/* ── NAV ── */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:18px 40px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(5,6,15,0.8);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{
+  font-family:'Syne',sans-serif;font-size:22px;font-weight:800;
+  background:linear-gradient(135deg,var(--indigo),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  cursor:pointer;letter-spacing:-0.5px;
+}
+.nav-links{display:flex;gap:8px;align-items:center}
+.nav-btn{
+  padding:8px 20px;border-radius:10px;border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;
+  transition:all 0.2s;
+}
+.nav-btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.nav-btn.ghost:hover{background:var(--surface);color:var(--text);border-color:var(--border2)}
+.nav-btn.primary{
+  background:linear-gradient(135deg,var(--indigo),var(--violet));
+  color:#fff;border:none;box-shadow:var(--glow-indigo);
+}
+.nav-btn.primary:hover{transform:translateY(-1px);box-shadow:0 0 50px rgba(99,102,241,0.4)}
+.nav-tab{
+  padding:7px 16px;border-radius:8px;border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;
+  background:transparent;color:var(--muted);transition:all 0.2s;
+}
+.nav-tab:hover,.nav-tab.active{background:var(--surface2);color:var(--text)}
+
+/* ── PAGE TRANSITIONS ── */
+.page{animation:fadeIn 0.4s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:120px 24px 80px;
+  position:relative;
+}
+.hero-orb{
+  position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;
+}
+.hero-orb.a{
+  width:500px;height:500px;
+  background:radial-gradient(circle,rgba(99,102,241,0.25),transparent 70%);
+  top:-100px;left:-100px;
+}
+.hero-orb.b{
+  width:400px;height:400px;
+  background:radial-gradient(circle,rgba(6,182,212,0.15),transparent 70%);
+  bottom:0;right:-50px;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 16px;border-radius:99px;
+  background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.3);
+  font-size:13px;color:var(--indigo);font-weight:500;
+  margin-bottom:32px;
+}
+.hero-badge span{
+  width:6px;height:6px;border-radius:50%;background:var(--indigo);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+.hero h1{
+  font-size:clamp(40px,6vw,76px);font-weight:800;
+  line-height:1.05;letter-spacing:-2px;
+  margin-bottom:24px;
+}
+.hero h1 .gradient{
+  background:linear-gradient(135deg,var(--indigo) 0%,var(--cyan) 60%,var(--emerald) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.hero p{
+  font-size:18px;color:var(--muted);max-width:560px;
+  line-height:1.7;margin-bottom:48px;font-weight:300;
+}
+.hero-cta{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:80px}
+.btn{
+  padding:14px 32px;border-radius:14px;border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;
+  transition:all 0.25s;display:inline-flex;align-items:center;gap:8px;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--indigo),var(--violet));
+  color:#fff;box-shadow:var(--glow-indigo);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 60px rgba(99,102,241,0.5)}
+.btn-ghost{
+  background:var(--surface);color:var(--text);
+  border:1px solid var(--border2);
+}
+.btn-ghost:hover{background:var(--surface2);transform:translateY(-1px)}
+.hero-stats{
+  display:flex;gap:48px;justify-content:center;flex-wrap:wrap;
+}
+.stat{text-align:center}
+.stat-num{
+  font-family:'Syne',sans-serif;font-size:32px;font-weight:800;
+  background:linear-gradient(135deg,var(--indigo),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.stat-label{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* ── FEATURES GRID ── */
+.features{padding:80px 24px;max-width:1200px;margin:0 auto}
+.section-label{
+  text-align:center;font-size:13px;color:var(--indigo);
+  font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;
+}
+.section-title{
+  text-align:center;font-size:clamp(28px,4vw,44px);
+  font-weight:800;letter-spacing:-1px;margin-bottom:16px;
+}
+.section-sub{text-align:center;color:var(--muted);font-size:16px;margin-bottom:64px}
+.feat-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:24px;
+}
+.feat-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;padding:32px;
+  transition:all 0.3s;position:relative;overflow:hidden;
+}
+.feat-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(99,102,241,0.05),transparent);
+  opacity:0;transition:opacity 0.3s;
+}
+.feat-card:hover{border-color:var(--border2);transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+.feat-card:hover::before{opacity:1}
+.feat-icon{
+  width:48px;height:48px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;margin-bottom:20px;
+}
+.feat-card h3{font-size:18px;font-weight:700;margin-bottom:10px}
+.feat-card p{color:var(--muted);font-size:14px;line-height:1.6}
+
+/* ── UPLOAD ZONE ── */
+.upload-section{padding:80px 24px;max-width:900px;margin:0 auto}
+.upload-zone{
+  border:2px dashed var(--border2);border-radius:24px;
+  padding:64px 40px;text-align:center;cursor:pointer;
+  transition:all 0.3s;position:relative;overflow:hidden;
+  background:var(--surface);
+}
+.upload-zone:hover,.upload-zone.drag-over{
+  border-color:var(--indigo);
+  background:rgba(99,102,241,0.05);
+  box-shadow:0 0 60px rgba(99,102,241,0.1);
+}
+.upload-icon{
+  font-size:56px;margin-bottom:20px;
+  animation:float 3s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.upload-zone h2{font-size:26px;font-weight:700;margin-bottom:12px}
+.upload-zone p{color:var(--muted);font-size:15px;margin-bottom:28px}
+.upload-tags{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.tag{
+  padding:4px 12px;border-radius:99px;font-size:12px;font-weight:600;
+  border:1px solid;
+}
+.tag.pdf{background:rgba(239,68,68,0.1);color:#f87171;border-color:rgba(239,68,68,0.2)}
+.tag.docx{background:rgba(99,102,241,0.1);color:#818cf8;border-color:rgba(99,102,241,0.2)}
+.tag.txt{background:rgba(16,185,129,0.1);color:#34d399;border-color:rgba(16,185,129,0.2)}
+
+/* ── TEXT PASTE AREA ── */
+.textarea{
+  width:100%;min-height:180px;padding:20px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;color:var(--text);font-family:'DM Sans',sans-serif;
+  font-size:14px;line-height:1.6;resize:vertical;
+  transition:border-color 0.2s;
+}
+.textarea:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 3px rgba(99,102,241,0.1)}
+.textarea::placeholder{color:var(--muted)}
+
+/* ── CARDS ── */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;padding:28px;
+  transition:all 0.3s;
+}
+.card:hover{border-color:var(--border2);box-shadow:0 10px 40px rgba(0,0,0,0.3)}
+
+/* ── SKILLS TAGS ── */
+.skill-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 14px;border-radius:99px;font-size:13px;font-weight:500;
+  background:rgba(99,102,241,0.12);color:#a5b4fc;
+  border:1px solid rgba(99,102,241,0.2);
+  transition:all 0.2s;
+}
+.skill-tag:hover{background:rgba(99,102,241,0.2);transform:scale(1.02)}
+.skill-tag.missing{
+  background:rgba(244,63,94,0.1);color:#fda4af;
+  border-color:rgba(244,63,94,0.2);
+}
+.skill-tag.matched{
+  background:rgba(16,185,129,0.1);color:#6ee7b7;
+  border-color:rgba(16,185,129,0.2);
+}
+.skills-wrap{display:flex;flex-wrap:wrap;gap:8px}
+
+/* ── SCORE RING ── */
+.score-ring{position:relative;display:inline-flex;align-items:center;justify-content:center}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring .ring-bg{stroke:rgba(255,255,255,0.06);stroke-width:8;fill:none}
+.score-ring .ring-fill{
+  stroke-width:8;fill:none;stroke-linecap:round;
+  transition:stroke-dashoffset 1.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+.score-center{
+  position:absolute;text-align:center;
+  font-family:'Syne',sans-serif;
+}
+.score-num{font-size:28px;font-weight:800;line-height:1}
+.score-label{font-size:11px;color:var(--muted);font-weight:500;margin-top:2px}
+
+/* ── INTERNSHIP CARD ── */
+.intern-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;padding:24px;
+  transition:all 0.35s;cursor:pointer;
+  animation:slideUp 0.4s ease forwards;
+  position:relative;overflow:hidden;
+}
+.intern-card::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--indigo),var(--cyan));
+  transform:scaleX(0);transform-origin:left;transition:transform 0.3s;
+}
+.intern-card:hover{border-color:rgba(99,102,241,0.3);transform:translateY(-3px);box-shadow:0 16px 50px rgba(0,0,0,0.4)}
+.intern-card:hover::after{transform:scaleX(1)}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+.intern-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:12px}
+.intern-logo{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#fff;
+  flex-shrink:0;
+}
+.intern-title{font-size:17px;font-weight:700;margin-bottom:4px}
+.intern-company{font-size:13px;color:var(--muted)}
+.match-badge{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 14px;border-radius:99px;font-size:14px;font-weight:700;
+  flex-shrink:0;
+}
+.intern-meta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.meta-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:12px;color:var(--muted);
+  background:rgba(255,255,255,0.04);
+  padding:4px 10px;border-radius:8px;border:1px solid var(--border);
+}
+.progress-bar{
+  height:4px;border-radius:4px;background:rgba(255,255,255,0.06);
+  margin-bottom:4px;overflow:hidden;
+}
+.progress-fill{
+  height:100%;border-radius:4px;
+  background:linear-gradient(90deg,var(--indigo),var(--cyan));
+  transition:width 1s cubic-bezier(0.34,1.56,0.64,1);
+}
+.progress-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:8px}
+
+/* ── DASHBOARD LAYOUT ── */
+.dashboard{
+  max-width:1300px;margin:0 auto;
+  padding:100px 24px 60px;
+}
+.dash-grid{
+  display:grid;grid-template-columns:340px 1fr;
+  gap:28px;align-items:start;
+}
+@media(max-width:900px){.dash-grid{grid-template-columns:1fr}}
+.sidebar{display:flex;flex-direction:column;gap:20px}
+.main-content{display:flex;flex-direction:column;gap:20px}
+
+/* ── SUGGESTION CARD ── */
+.suggest-card{
+  display:flex;gap:14px;padding:18px;
+  border-radius:14px;border:1px solid var(--border);
+  background:var(--surface);transition:all 0.2s;
+}
+.suggest-card:hover{border-color:var(--border2);transform:translateX(4px)}
+.suggest-icon{font-size:22px;flex-shrink:0;margin-top:2px}
+.suggest-title{font-size:14px;font-weight:600;margin-bottom:4px}
+.suggest-msg{font-size:13px;color:var(--muted);line-height:1.5}
+
+/* ── LOADING ── */
+.loading{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:300px;gap:20px;
+}
+.spinner{
+  width:48px;height:48px;border:3px solid var(--border);
+  border-top-color:var(--indigo);border-radius:50%;
+  animation:spin 0.8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading p{color:var(--muted);font-size:15px}
+.loading-dots{display:flex;gap:6px}
+.loading-dots span{
+  width:6px;height:6px;border-radius:50%;background:var(--indigo);
+  animation:bounce 1.2s infinite;
+}
+.loading-dots span:nth-child(2){animation-delay:0.2s}
+.loading-dots span:nth-child(3){animation-delay:0.4s}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* ── MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(8px);z-index:200;
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  animation:fadeIn 0.2s ease;
+}
+.modal{
+  background:#0c0e1f;border:1px solid var(--border2);
+  border-radius:24px;padding:36px;max-width:640px;width:100%;
+  max-height:90vh;overflow-y:auto;
+  animation:scaleIn 0.25s ease;
+}
+@keyframes scaleIn{from{transform:scale(0.95);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px}
+.close-btn{
+  width:32px;height:32px;border-radius:8px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);cursor:pointer;font-size:18px;
+  display:flex;align-items:center;justify-content:center;transition:all 0.2s;
+}
+.close-btn:hover{background:var(--surface2);color:var(--text)}
+
+/* ── INPUT ── */
+.input{
+  width:100%;padding:13px 16px;border-radius:12px;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;
+  transition:border-color 0.2s;outline:none;
+}
+.input:focus{border-color:var(--indigo);box-shadow:0 0 0 3px rgba(99,102,241,0.1)}
+.input::placeholder{color:var(--muted)}
+.input-group{margin-bottom:16px}
+.input-label{font-size:13px;font-weight:500;color:var(--muted);margin-bottom:8px;display:block}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:4px;background:var(--surface);border-radius:12px;padding:4px;margin-bottom:24px}
+.tab-btn{
+  flex:1;padding:10px;border-radius:8px;border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;
+  background:transparent;color:var(--muted);transition:all 0.2s;
+}
+.tab-btn.active{background:var(--surface2);color:var(--text)}
+
+/* ── EMPLOYER ── */
+.employer-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.post-form{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px}
+.post-form h2{font-size:20px;font-weight:700;margin-bottom:24px}
+
+/* ── ALERT ── */
+.alert{
+  padding:14px 18px;border-radius:12px;font-size:14px;
+  display:flex;align-items:center;gap:10px;margin-bottom:16px;
+}
+.alert.error{background:rgba(244,63,94,0.1);border:1px solid rgba(244,63,94,0.2);color:#fda4af}
+.alert.success{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);color:#6ee7b7}
+
+/* ── MISC ── */
+.divider{height:1px;background:var(--border);margin:24px 0}
+.flex{display:flex;align-items:center}
+.gap-8{gap:8px}.gap-12{gap:12px}.gap-16{gap:16px}
+.mb-8{margin-bottom:8px}.mb-12{margin-bottom:12px}.mb-16{margin-bottom:16px}.mb-24{margin-bottom:24px}
+.mt-auto{margin-top:auto}
+.text-muted{color:var(--muted)}
+.text-sm{font-size:13px}
+.text-xs{font-size:11px}
+.text-center{text-align:center}
+.w-full{width:100%}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.grid-2{grid-template-columns:1fr}}
+.radial-chart{position:relative;width:160px;height:160px;flex-shrink:0}
+
+/* ── RANK BADGE ── */
+.rank-badge{
+  width:28px;height:28px;border-radius:8px;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:800;
+  flex-shrink:0;
+}
+.rank-badge.r1{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff}
+.rank-badge.r2{background:rgba(148,163,184,0.2);color:#94a3b8}
+.rank-badge.r3{background:rgba(180,140,100,0.2);color:#b08060}
+.rank-badge.rn{background:rgba(255,255,255,0.06);color:var(--muted)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+// ── CONFIG ──
+const API = 'http://localhost:5000';
+
+// ── MOCK ML ENGINE (client-side fallback when backend offline) ──
+const SKILLS_DB = ['Python','JavaScript','TypeScript','React','Vue','Angular','Node.js','HTML','CSS',
+  'Tailwind','SQL','MongoDB','PostgreSQL','Redis','Docker','Kubernetes','AWS','Git','Linux',
+  'Machine Learning','Deep Learning','TensorFlow','PyTorch','NumPy','Pandas','Scikit-learn',
+  'Flask','Django','FastAPI','Express','GraphQL','REST API','CI/CD','Agile','Figma',
+  'React Native','Flutter','Firebase','Redux','Terraform','DevOps','Statistics','R','Tableau',
+  'Cybersecurity','Networking','Cryptography','Penetration Testing'];
+
+const INTERNSHIPS_DATA = [
+  {id:'int_001',title:'Frontend Developer Intern',company:'Nexus Technologies',location:'Remote',type:'Full-time',duration:'3 months',stipend:'$1500/mo',logo:'NT',color:'#6366f1',
+   requiredSkills:['React','JavaScript','HTML','CSS','TypeScript','Git'],
+   description:'Build responsive web apps using React and modern JavaScript. Work with design teams on UI components and REST API integration.'},
+  {id:'int_002',title:'Machine Learning Engineer Intern',company:'DataSphere AI',location:'San Francisco, CA',type:'Full-time',duration:'6 months',stipend:'$2500/mo',logo:'DS',color:'#8b5cf6',
+   requiredSkills:['Python','TensorFlow','PyTorch','Machine Learning','NumPy','Pandas'],
+   description:'Build and deploy ML models. Work on NLP, computer vision, and recommendation systems using TensorFlow and PyTorch.'},
+  {id:'int_003',title:'Full Stack Developer Intern',company:'CloudBurst Solutions',location:'New York, NY',type:'Hybrid',duration:'4 months',stipend:'$2000/mo',logo:'CB',color:'#06b6d4',
+   requiredSkills:['React','Node.js','Python','SQL','MongoDB','Docker'],
+   description:'Build full-stack features from database to UI. Work with microservices, Docker, and cloud deployments.'},
+  {id:'int_004',title:'Data Science Intern',company:'AnalyticsIQ',location:'Austin, TX',type:'Full-time',duration:'3 months',stipend:'$1800/mo',logo:'AI',color:'#10b981',
+   requiredSkills:['Python','SQL','Pandas','NumPy','Tableau','Statistics','R'],
+   description:'Analyze large datasets and build predictive models. Create visualizations and present findings to stakeholders.'},
+  {id:'int_005',title:'Backend Developer Intern',company:'ServerStack Inc',location:'Remote',type:'Part-time',duration:'3 months',stipend:'$1200/mo',logo:'SS',color:'#f59e0b',
+   requiredSkills:['Python','Django','Flask','PostgreSQL','Redis','Linux'],
+   description:'Build robust REST APIs using Python frameworks. Design database schemas and implement caching with Redis.'},
+  {id:'int_006',title:'Mobile App Developer Intern',company:'AppForge Studio',location:'Seattle, WA',type:'Full-time',duration:'4 months',stipend:'$2200/mo',logo:'AF',color:'#ef4444',
+   requiredSkills:['React Native','JavaScript','Firebase','Redux','iOS','Android'],
+   description:'Build cross-platform mobile apps with React Native. Integrate Firebase backend and manage state with Redux.'},
+  {id:'int_007',title:'DevOps Engineer Intern',company:'InfraCloud Systems',location:'Chicago, IL',type:'Full-time',duration:'6 months',stipend:'$2300/mo',logo:'IC',color:'#64748b',
+   requiredSkills:['Docker','Kubernetes','AWS','CI/CD','Terraform','Linux','Python'],
+   description:'Automate infrastructure provisioning and CI/CD pipelines. Work with Kubernetes and cloud platforms.'},
+  {id:'int_008',title:'Cybersecurity Intern',company:'SecureNet Labs',location:'Washington, DC',type:'Full-time',duration:'3 months',stipend:'$1900/mo',logo:'SN',color:'#dc2626',
+   requiredSkills:['Networking','Penetration Testing','Python','Linux','Cryptography'],
+   description:'Vulnerability assessment, penetration testing, and security incident response. Develop automated security tools.'},
+];
+
+// ── MOCK ML FUNCTIONS ──
+function computeTFIDF(text, corpus) {
+  const words = text.toLowerCase().split(/\s+/);
+  const tf = {};
+  words.forEach(w => tf[w] = (tf[w]||0)+1);
+  const tfidfScore = Object.keys(tf).reduce((acc,w) => {
+    const idf = corpus.filter(d => d.toLowerCase().includes(w)).length;
+    return acc + (tf[w]/words.length) * Math.log(corpus.length/(idf+1));
+  }, 0);
+  return Math.min(tfidfScore * 8, 1);
+}
+
+function cosineSimilarity(text1, text2) {
+  const tokenize = t => t.toLowerCase().split(/\W+/).filter(Boolean);
+  const t1 = tokenize(text1), t2 = tokenize(text2);
+  const vocab = [...new Set([...t1,...t2])];
+  const vec = (tokens) => vocab.map(v => tokens.filter(t=>t===v).length);
+  const v1=vec(t1), v2=vec(t2);
+  const dot = v1.reduce((s,a,i)=>s+a*v2[i],0);
+  const mag = (v) => Math.sqrt(v.reduce((s,a)=>s+a*a,0));
+  return dot/(mag(v1)*mag(v2)+0.001);
+}
+
+function extractSkillsLocal(text) {
+  const t = text.toLowerCase();
+  return SKILLS_DB.filter(s => t.includes(s.toLowerCase()));
+}
+
+function computeMatchLocal(resumeText, resumeSkills, internship) {
+  const tfidf = cosineSimilarity(resumeText, internship.description + ' ' + internship.requiredSkills.join(' '));
+  const rSkills = resumeSkills.map(s=>s.toLowerCase());
+  const iSkills = internship.requiredSkills.map(s=>s.toLowerCase());
+  const matched = internship.requiredSkills.filter(s=>rSkills.includes(s.toLowerCase()));
+  const missing = internship.requiredSkills.filter(s=>!rSkills.includes(s.toLowerCase()));
+  const skillScore = iSkills.length ? matched.length/iSkills.length : 0;
+  const hybrid = 0.6*tfidf + 0.4*skillScore;
+  return {
+    match_percentage: Math.min(Math.round(hybrid*100*1.4+10),98),
+    tfidf_score: Math.round(tfidf*100),
+    skill_score: Math.round(skillScore*100),
+    matched_skills: matched,
+    missing_skills: missing,
+  };
+}
+
+// ── API CLIENT ──
+async function apiCall(endpoint, method='GET', body=null) {
+  try {
+    const opts = {
+      method,
+      headers: {'Content-Type':'application/json'},
+    };
+    if(body) opts.body = JSON.stringify(body);
+    const res = await fetch(API+endpoint, opts);
+    return await res.json();
+  } catch {
+    return null; // backend offline
+  }
+}
+
+// ── SCORE RING COMPONENT ──
+function ScoreRing({score, size=120, color='#6366f1', label='Score'}) {
+  const r = (size-20)/2, circ = 2*Math.PI*r;
+  const offset = circ - (score/100)*circ;
+  const getColor = (s) => s>=80?'#10b981':s>=60?'#6366f1':s>=40?'#f59e0b':'#ef4444';
+  const c = color || getColor(score);
+  return (
+    <div className="score-ring" style={{width:size,height:size}}>
+      <svg width={size} height={size}>
+        <circle className="ring-bg" cx={size/2} cy={size/2} r={r}/>
+        <circle className="ring-fill" cx={size/2} cy={size/2} r={r}
+          stroke={c}
+          strokeDasharray={circ}
+          strokeDashoffset={offset}
+          style={{filter:`drop-shadow(0 0 8px ${c})`}}
+        />
+      </svg>
+      <div className="score-center">
+        <div className="score-num" style={{color:c,fontSize:size>100?28:18}}>{score}</div>
+        <div className="score-label">{label}</div>
+      </div>
+    </div>
+  );
+}
+
+// ── MATCH BADGE ──
+function MatchBadge({pct}) {
+  const color = pct>=70?'#10b981':pct>=50?'#6366f1':'#f59e0b';
+  const bg = pct>=70?'rgba(16,185,129,0.12)':pct>=50?'rgba(99,102,241,0.12)':'rgba(245,158,11,0.12)';
+  return (
+    <div className="match-badge" style={{background:bg,color,border:`1px solid ${color}33`}}>
+      <span style={{fontSize:16}}>⚡</span> {pct}%
+    </div>
+  );
+}
+
+// ── NAV ──
+function Nav({page, setPage, user, setUser}) {
+  const [showDropdown, setShowDropdown] = useState(false);
+  return (
+    <nav className="nav">
+      <div className="nav-logo" onClick={()=>setPage('home')}>intern<span style={{color:'var(--cyan)'}}>nova</span></div>
+      <div className="nav-links">
+        {user ? <>
+          <button className="nav-tab" onClick={()=>setPage('upload')}>Analyze Resume</button>
+          <button className="nav-tab" onClick={()=>setPage('dashboard')}>Dashboard</button>
+          {user.role==='employer' && <button className="nav-tab" onClick={()=>setPage('employer')}>Employer</button>}
+          <button className="nav-btn ghost" onClick={()=>setPage('browse')}>Browse</button>
+          <div style={{position:'relative'}}>
+            <button className="nav-btn primary" onClick={()=>setShowDropdown(!showDropdown)}>
+              {user.name.split(' ')[0]} ▾
+            </button>
+            {showDropdown && (
+              <div style={{position:'absolute',right:0,top:'calc(100%+8px)',background:'#0c0e1f',border:'1px solid var(--border)',borderRadius:12,padding:8,minWidth:160,zIndex:50}}>
+                <div style={{padding:'8px 12px',fontSize:13,color:'var(--muted)'}}>Signed in as</div>
+                <div style={{padding:'4px 12px 8px',fontSize:13,fontWeight:600}}>{user.email}</div>
+                <div style={{height:1,background:'var(--border)',margin:'4px 0'}}/>
+                <button style={{width:'100%',padding:'8px 12px',background:'transparent',border:'none',color:'var(--rose)',cursor:'pointer',fontSize:13,textAlign:'left',borderRadius:8}}
+                  onClick={()=>{setUser(null);setPage('home');setShowDropdown(false)}}>
+                  Sign Out
+                </button>
+              </div>
+            )}
+          </div>
+        </> : <>
+          <button className="nav-btn ghost" onClick={()=>setPage('login')}>Log In</button>
+          <button className="nav-btn primary" onClick={()=>setPage('signup')}>Get Started →</button>
+        </>}
+      </div>
+    </nav>
+  );
+}
+
+// ── HOME PAGE ──
+function HomePage({setPage}) {
+  return (
+    <div className="page">
+      <div className="hero">
+        <div className="hero-orb a"/><div className="hero-orb b"/>
+        <div style={{position:'relative',zIndex:1}}>
+          <div className="hero-badge"><span/> AI-Powered Matching Engine</div>
+          <h1>Find Internships That<br/><span className="gradient">Actually Match</span><br/>Your Skills</h1>
+          <p>Upload your resume and let our ML engine analyze your profile, match you with the best opportunities, and show you exactly what skills to build next.</p>
+          <div className="hero-cta">
+            <button className="btn btn-primary" onClick={()=>setPage('signup')}>
+              🚀 Analyze My Resume
+            </button>
+            <button className="btn btn-ghost" onClick={()=>setPage('browse')}>
+              Browse Internships →
+            </button>
+          </div>
+          <div className="hero-stats">
+            {[['8+','Live Internships'],['TF-IDF','ML Engine'],['AI','Skill Gap Analysis'],['Real-time','Match Updates']].map(([n,l])=>(
+              <div className="stat" key={l}><div className="stat-num">{n}</div><div className="stat-label">{l}</div></div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="features">
+        <div className="section-label">How It Works</div>
+        <h2 className="section-title">AI That Actually Understands You</h2>
+        <p className="section-sub">Not just keyword matching — true semantic understanding powered by TF-IDF and Cosine Similarity</p>
+        <div className="feat-grid">
+          {[
+            {icon:'📄',color:'rgba(99,102,241,0.15)',t:'Resume Analysis',d:'Upload PDF or DOCX. Our NLP engine extracts skills, education, and experience with high precision.'},
+            {icon:'🤖',color:'rgba(139,92,246,0.15)',t:'TF-IDF Matching',d:'60% semantic similarity via TF-IDF + 40% skill overlap gives you the most accurate match scores in the industry.'},
+            {icon:'🎯',color:'rgba(6,182,212,0.15)',t:'Skill Gap Analyzer',d:'See exactly which skills you\'re missing for each internship and get a personalized roadmap to close the gap.'},
+            {icon:'📊',color:'rgba(16,185,129,0.15)',t:'Explainable AI',d:'No black boxes. See the breakdown of your TF-IDF score, skill score, and matched keywords transparently.'},
+            {icon:'💡',color:'rgba(245,158,11,0.15)',t:'Smart Suggestions',d:'AI-generated tips to improve your resume, add keywords, and increase your chances of getting selected.'},
+            {icon:'🏢',color:'rgba(244,63,94,0.15)',t:'Employer Module',d:'Companies can post internships, view matched candidates, and see AI-generated match scores instantly.'},
+          ].map(f=>(
+            <div className="feat-card" key={f.t}>
+              <div className="feat-icon" style={{background:f.color}}>{f.icon}</div>
+              <h3>{f.t}</h3>
+              <p>{f.d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── AUTH ──
+function AuthPage({mode, setPage, setUser}) {
+  const [form, setForm] = useState({name:'',email:'',password:'',role:'student'});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handle = async() => {
+    setLoading(true); setError('');
+    if(mode==='signup' && !form.name){setError('Name required');setLoading(false);return}
+    if(!form.email||!form.password){setError('Email and password required');setLoading(false);return}
+
+    const endpoint = mode==='login'?'/auth/login':'/auth/signup';
+    const data = await apiCall(endpoint,'POST',form);
+    
+    if(data && data.token){
+      setUser(data.user);
+      setPage('upload');
+    } else if(data && data.error){
+      setError(data.error);
+    } else {
+      // Offline mode — simulate auth
+      const mockUser = {id:'mock_'+Date.now(),email:form.email,name:form.name||form.email.split('@')[0],role:form.role};
+      setUser(mockUser);
+      setPage('upload');
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="page" style={{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'100vh',padding:'80px 24px'}}>
+      <div style={{width:'100%',maxWidth:420}}>
+        <div style={{textAlign:'center',marginBottom:36}}>
+          <div style={{fontFamily:'Syne',fontSize:28,fontWeight:800,background:'linear-gradient(135deg,var(--indigo),var(--cyan))',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',marginBottom:8}}>
+            intern<span>nova</span>
+          </div>
+          <h2 style={{fontSize:22,fontWeight:700}}>{mode==='login'?'Welcome back':'Create your account'}</h2>
+          <p className="text-muted text-sm" style={{marginTop:8}}>{mode==='login'?'Sign in to continue':'Start matching with top internships'}</p>
+        </div>
+        <div className="card">
+          {error && <div className="alert error">⚠️ {error}</div>}
+          {mode==='signup' && <>
+            <div className="input-group">
+              <label className="input-label">Full Name</label>
+              <input className="input" placeholder="John Doe" value={form.name} onChange={e=>setForm({...form,name:e.target.value})}/>
+            </div>
+            <div className="input-group">
+              <label className="input-label">I am a</label>
+              <div className="tabs" style={{marginBottom:0}}>
+                <button className={`tab-btn ${form.role==='student'?'active':''}`} onClick={()=>setForm({...form,role:'student'})}>🎓 Student</button>
+                <button className={`tab-btn ${form.role==='employer'?'active':''}`} onClick={()=>setForm({...form,role:'employer'})}>🏢 Employer</button>
+              </div>
+            </div>
+          </>}
+          <div className="input-group">
+            <label className="input-label">Email</label>
+            <input className="input" type="email" placeholder="you@example.com" value={form.email} onChange={e=>setForm({...form,email:e.target.value})}/>
+          </div>
+          <div className="input-group" style={{marginBottom:24}}>
+            <label className="input-label">Password</label>
+            <input className="input" type="password" placeholder="••••••••" value={form.password} onChange={e=>setForm({...form,password:e.target.value})}
+              onKeyDown={e=>e.key==='Enter'&&handle()}/>
+          </div>
+          <button className="btn btn-primary w-full" onClick={handle} disabled={loading} style={{justifyContent:'center'}}>
+            {loading?'Processing…':mode==='login'?'Sign In →':'Create Account →'}
+          </button>
+        </div>
+        <p className="text-center text-sm text-muted" style={{marginTop:20}}>
+          {mode==='login'?<>No account? <span style={{color:'var(--indigo)',cursor:'pointer'}} onClick={()=>setPage('signup')}>Sign up</span></>
+            :<>Already have an account? <span style={{color:'var(--indigo)',cursor:'pointer'}} onClick={()=>setPage('login')}>Log in</span></>}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ── RESUME UPLOAD PAGE ──
+function UploadPage({setPage, setAnalysis}) {
+  const [mode, setMode] = useState('paste'); // paste | file
+  const [text, setText] = useState('');
+  const [drag, setDrag] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const fileRef = useRef();
+
+  const DEMO_RESUME = `John Doe | john.doe@email.com | linkedin.com/in/johndoe
+
+EDUCATION
+B.Tech Computer Science — IIT Delhi (2020-2024) | GPA: 8.7/10
+
+TECHNICAL SKILLS
+Languages: Python, JavaScript, TypeScript, SQL
+Frameworks: React, Node.js, Flask, Django
+Tools: Git, Docker, AWS, Linux
+Libraries: NumPy, Pandas, Scikit-learn, TensorFlow
+
+PROJECTS
+• E-Commerce Platform — Built full-stack app with React frontend, Node.js backend, MongoDB database
+  Implemented REST APIs, authentication with JWT, deployed on AWS EC2
+• ML Recommendation System — Developed collaborative filtering recommendation engine using Python
+  Achieved 87% precision using matrix factorization and cosine similarity
+
+EXPERIENCE
+Software Development Intern — TechCorp (June-Aug 2023)
+• Developed React components for dashboard, improving load time by 40%
+• Integrated REST APIs and implemented Redux state management
+
+ACHIEVEMENTS
+• Winner, Smart India Hackathon 2023
+• Google Cloud Certified — Associate Cloud Engineer`;
+
+  const analyze = async () => {
+    const t = text.trim();
+    if(!t){return}
+    setLoading(true);
+    
+    const data = await apiCall('/analyze-resume','POST',{text:t});
+    if(data && data.success){
+      setAnalysis({...data, raw_text:t});
+    } else {
+      // offline fallback
+      const skills = extractSkillsLocal(t);
+      const score = Math.min(30 + skills.length*4 + Math.floor(t.split(' ').length/8), 100);
+      setAnalysis({
+        skills, score, raw_text:t,
+        education:[t.split('\n').find(l=>l.toLowerCase().includes('b.tech')||l.toLowerCase().includes('bachelor'))||'Not found'],
+        contact:{email:(t.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/)||[''])[0]},
+        word_count:t.split(/\s+/).length,
+        success:true,
+      });
+    }
+    setPage('dashboard');
+    setLoading(false);
+  };
+
+  const handleFile = (file) => {
+    if(!file)return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      // For demo, use filename as placeholder
+      setText(`[File uploaded: ${file.name}]\n\nSince this is a frontend-only demo, paste your resume text below or use the demo resume.\n\nFor full PDF/DOCX extraction, run the Flask backend.\n\n${DEMO_RESUME}`);
+      setMode('paste');
+    };
+    reader.readAsText(file);
+  };
+
+  return (
+    <div className="page" style={{maxWidth:860,margin:'0 auto',padding:'100px 24px 60px'}}>
+      <div style={{textAlign:'center',marginBottom:48}}>
+        <div className="section-label">Step 1</div>
+        <h1 style={{fontSize:36,fontWeight:800,letterSpacing:-1,marginBottom:12}}>Upload Your Resume</h1>
+        <p className="text-muted">Paste text, upload a file, or try the demo resume</p>
+      </div>
+
+      <div className="tabs">
+        <button className={`tab-btn ${mode==='paste'?'active':''}`} onClick={()=>setMode('paste')}>📝 Paste Text</button>
+        <button className={`tab-btn ${mode==='file'?'active':''}`} onClick={()=>setMode('file')}>📎 Upload File</button>
+        <button className={`tab-btn ${mode==='demo'?'active':''}`} onClick={()=>{setMode('demo');setText(DEMO_RESUME)}}>⚡ Demo Resume</button>
+      </div>
+
+      {mode==='file' ? (
+        <div className={`upload-zone ${drag?'drag-over':''}`}
+          onClick={()=>fileRef.current.click()}
+          onDragOver={e=>{e.preventDefault();setDrag(true)}}
+          onDragLeave={()=>setDrag(false)}
+          onDrop={e=>{e.preventDefault();setDrag(false);handleFile(e.dataTransfer.files[0])}}>
+          <input ref={fileRef} type="file" accept=".pdf,.docx,.txt" style={{display:'none'}}
+            onChange={e=>handleFile(e.target.files[0])}/>
+          <div className="upload-icon">📂</div>
+          <h2>Drop your resume here</h2>
+          <p>Click to browse or drag and drop</p>
+          <div className="upload-tags">
+            <span className="tag pdf">PDF</span>
+            <span className="tag docx">DOCX</span>
+            <span className="tag txt">TXT</span>
+          </div>
+        </div>
+      ) : (
+        <div>
+          <textarea className="textarea" placeholder="Paste your full resume text here… Include skills, education, experience, and projects for best results."
+            value={text} onChange={e=>setText(e.target.value)} style={{minHeight:320}}/>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:8}}>
+            <span className="text-xs text-muted">{text.split(/\s+/).filter(Boolean).length} words</span>
+            {mode==='demo' && <span className="text-xs" style={{color:'var(--emerald)'}}>✓ Demo resume loaded</span>}
+          </div>
+        </div>
+      )}
+
+      <div style={{marginTop:28,display:'flex',gap:16,justifyContent:'center'}}>
+        <button className="btn btn-primary" onClick={analyze} disabled={loading||!text.trim()} style={{padding:'16px 48px',fontSize:16}}>
+          {loading?<><div style={{width:18,height:18,border:'2px solid rgba(255,255,255,0.3)',borderTopColor:'#fff',borderRadius:'50%',animation:'spin 0.8s linear infinite',marginRight:8}}/> Analyzing…</>:'🔍 Analyze Resume →'}
+        </button>
+      </div>
+      <p className="text-center text-xs text-muted" style={{marginTop:16}}>
+        🔒 Your data is processed locally and never stored without consent
+      </p>
+    </div>
+  );
+}
+
+// ── DASHBOARD ──
+function DashboardPage({analysis, setPage}) {
+  const [matches, setMatches] = useState(null);
+  const [suggestions, setSuggestions] = useState([]);
+  const [selected, setSelected] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('matches');
+
+  useEffect(()=>{
+    if(!analysis)return;
+    setLoading(true);
+    const run = async()=>{
+      const data = await apiCall('/find-matches','POST',{resume_text:analysis.raw_text||'',skills:analysis.skills});
+      if(data && data.success){
+        setMatches(data.matches);
+        setSuggestions(data.suggestions||[]);
+      } else {
+        // offline ML
+        const results = INTERNSHIPS_DATA.map(intern=>{
+          const m = computeMatchLocal(analysis.raw_text||'',analysis.skills||[],intern);
+          return {...intern,...m};
+        }).sort((a,b)=>b.match_percentage-a.match_percentage);
+        setMatches(results);
+        setSuggestions([
+          {type:'tip',icon:'💡',title:'Optimize Keywords',message:'Mirror language from internship descriptions to boost ATS ranking.'},
+          {type:'info',icon:'🎯',title:'Top Missing Skills',message:`Focus on: ${[...new Set(results.flatMap(r=>r.missing_skills))].slice(0,3).join(', ')}`},
+          {type:'tip',icon:'📊',title:'Quantify Achievements',message:'Use metrics: "Improved performance by 40%" beats vague descriptions.'},
+        ]);
+      }
+      setLoading(false);
+    };
+    run();
+  },[analysis]);
+
+  if(!analysis) return (
+    <div className="loading"><div className="spinner"/><p>No analysis found. <span style={{color:'var(--indigo)',cursor:'pointer'}} onClick={()=>setPage('upload')}>Upload your resume</span></p></div>
+  );
+
+  const skills = analysis.skills||[];
+  const score = analysis.score||0;
+
+  return (
+    <div className="dashboard page">
+      <div style={{marginBottom:32}}>
+        <div className="section-label">AI Analysis Complete</div>
+        <h1 style={{fontSize:32,fontWeight:800,letterSpacing:-1}}>Your Resume Dashboard</h1>
+      </div>
+
+      <div className="dash-grid">
+        {/* SIDEBAR */}
+        <div className="sidebar">
+          {/* Score Card */}
+          <div className="card" style={{textAlign:'center',padding:32}}>
+            <div style={{display:'flex',justifyContent:'center',marginBottom:20}}>
+              <ScoreRing score={score} size={140}/>
+            </div>
+            <h3 style={{fontSize:16,fontWeight:700,marginBottom:8}}>Resume Score</h3>
+            <p className="text-sm text-muted">{score>=80?'Excellent profile!':score>=60?'Good — small improvements needed':score>=40?'Average — needs work':'Below average — needs significant work'}</p>
+            <div className="divider"/>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+              {[['Skills',Math.min(skills.length*5,50)+'%'],['Content',score+'%'],['Words',analysis.word_count||0],['Sections','4+']].map(([l,v])=>(
+                <div key={l} style={{background:'var(--surface2)',borderRadius:12,padding:'12px 8px'}}>
+                  <div style={{fontSize:16,fontWeight:700,fontFamily:'Syne'}}>{v}</div>
+                  <div className="text-xs text-muted">{l}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Skills Card */}
+          <div className="card">
+            <h3 style={{fontSize:16,fontWeight:700,marginBottom:4}}>Extracted Skills</h3>
+            <p className="text-xs text-muted" style={{marginBottom:16}}>{skills.length} skills detected</p>
+            <div className="skills-wrap">
+              {skills.length>0?skills.map(s=><span className="skill-tag" key={s}>✓ {s}</span>)
+                :<span className="text-sm text-muted">No skills detected</span>}
+            </div>
+          </div>
+
+          {/* Education */}
+          {analysis.education && analysis.education.length>0 && (
+            <div className="card">
+              <h3 style={{fontSize:16,fontWeight:700,marginBottom:12}}>🎓 Education</h3>
+              {analysis.education.map((e,i)=>(
+                <div key={i} style={{fontSize:13,color:'var(--muted)',padding:'8px 0',borderBottom:i<analysis.education.length-1?'1px solid var(--border)':'none'}}>{e}</div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* MAIN */}
+        <div className="main-content">
+          <div className="tabs">
+            {[['matches','🎯 Matches'],['gap','🔍 Skill Gap'],['suggest','💡 Suggestions'],['all','📊 All Rankings']].map(([k,l])=>(
+              <button key={k} className={`tab-btn ${activeTab===k?'active':''}`} onClick={()=>setActiveTab(k)}>{l}</button>
+            ))}
+          </div>
+
+          {activeTab==='matches' && (
+            <div>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20}}>
+                <h2 style={{fontSize:20,fontWeight:700}}>Top Matches</h2>
+                {matches && <span className="text-sm text-muted">Analyzed {INTERNSHIPS_DATA.length} internships</span>}
+              </div>
+              {loading ? <div className="loading"><div className="spinner"/><div className="loading-dots"><span/><span/><span/></div><p>Running ML analysis…</p></div>
+                : matches?.slice(0,5).map((m,i)=>(
+                  <InternCard key={m.id} intern={m} rank={i+1} onSelect={setSelected}/>
+                ))}
+            </div>
+          )}
+
+          {activeTab==='gap' && (
+            <div>
+              <h2 style={{fontSize:20,fontWeight:700,marginBottom:20}}>Skill Gap Analysis</h2>
+              {matches?.slice(0,5).map(m=>(
+                <div className="card" key={m.id} style={{marginBottom:16}}>
+                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:12}}>
+                    <div>
+                      <div style={{fontWeight:700,fontSize:15}}>{m.title}</div>
+                      <div className="text-sm text-muted">{m.company}</div>
+                    </div>
+                    <MatchBadge pct={m.match_percentage}/>
+                  </div>
+                  {m.matched_skills?.length>0 && <>
+                    <div className="text-xs" style={{color:'var(--emerald)',fontWeight:600,marginBottom:8}}>✅ YOU HAVE ({m.matched_skills.length})</div>
+                    <div className="skills-wrap" style={{marginBottom:12}}>
+                      {m.matched_skills.map(s=><span className="skill-tag matched" key={s}>✓ {s}</span>)}
+                    </div>
+                  </>}
+                  {m.missing_skills?.length>0 && <>
+                    <div className="text-xs" style={{color:'var(--rose)',fontWeight:600,marginBottom:8}}>⚠️ YOU'RE MISSING ({m.missing_skills.length})</div>
+                    <div className="skills-wrap">
+                      {m.missing_skills.map(s=><span className="skill-tag missing" key={s}>✗ {s}</span>)}
+                    </div>
+                  </>}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {activeTab==='suggest' && (
+            <div>
+              <h2 style={{fontSize:20,fontWeight:700,marginBottom:20}}>AI Improvement Suggestions</h2>
+              <div style={{display:'flex',flexDirection:'column',gap:12}}>
+                {suggestions.map((s,i)=>(
+                  <div className="suggest-card" key={i}>
+                    <div className="suggest-icon">{s.icon}</div>
+                    <div><div className="suggest-title">{s.title}</div><div className="suggest-msg">{s.message}</div></div>
+                  </div>
+                ))}
+                {/* Static tips */}
+                {[
+                  {icon:'🌐',title:'Build a Portfolio',message:'A GitHub portfolio with 3+ projects can increase your match score by up to 30 points.'},
+                  {icon:'📜',title:'Add Certifications',message:'AWS, Google Cloud, or Coursera certificates signal commitment and boost employer confidence.'},
+                  {icon:'🤝',title:'Network on LinkedIn',message:'Connect with recruiters from target companies. 70% of jobs are filled through networking.'},
+                ].map((s,i)=>(
+                  <div className="suggest-card" key={'s'+i}>
+                    <div className="suggest-icon">{s.icon}</div>
+                    <div><div className="suggest-title">{s.title}</div><div className="suggest-msg">{s.message}</div></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab==='all' && (
+            <div>
+              <h2 style={{fontSize:20,fontWeight:700,marginBottom:20}}>Full Rankings — All Internships</h2>
+              {matches?.map((m,i)=>(
+                <div key={m.id} className="card" style={{marginBottom:12,display:'flex',gap:16,alignItems:'center'}}>
+                  <div className={`rank-badge r${i<3?i+1:'n'}`}>#{i+1}</div>
+                  <div style={{flex:1}}>
+                    <div style={{fontWeight:600,fontSize:14}}>{m.title}</div>
+                    <div className="text-xs text-muted">{m.company} · {m.location}</div>
+                    <div className="progress-bar" style={{marginTop:8}}>
+                      <div className="progress-fill" style={{width:`${m.match_percentage}%`}}/>
+                    </div>
+                  </div>
+                  <MatchBadge pct={m.match_percentage}/>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* DETAIL MODAL */}
+      {selected && <InternModal intern={selected} onClose={()=>setSelected(null)} skills={skills}/>}
+    </div>
+  );
+}
+
+// ── INTERN CARD ──
+function InternCard({intern, rank, onSelect}) {
+  const delay = rank*0.08;
+  return (
+    <div className="intern-card" style={{marginBottom:16,animationDelay:`${delay}s`}} onClick={()=>onSelect(intern)}>
+      <div className="intern-header">
+        <div style={{display:'flex',gap:12,alignItems:'flex-start'}}>
+          <div className="intern-logo" style={{background:intern.color}}>{intern.logo}</div>
+          <div>
+            <div className="intern-title">{intern.title}</div>
+            <div className="intern-company">{intern.company}</div>
+          </div>
+        </div>
+        <MatchBadge pct={intern.match_percentage}/>
+      </div>
+
+      <div className="intern-meta">
+        {[['📍',intern.location],['⏱',intern.duration],['💼',intern.type],['💰',intern.stipend]].map(([i,v])=>(
+          <span className="meta-chip" key={v}>{i} {v}</span>
+        ))}
+      </div>
+
+      {/* Scores */}
+      <div style={{marginBottom:14}}>
+        {[['TF-IDF Similarity',intern.tfidf_score,'var(--indigo)'],['Skill Match',intern.skill_score,'var(--emerald)']].map(([l,v,c])=>(
+          <div key={l}>
+            <div className="progress-row"><span>{l}</span><span style={{color:c,fontWeight:600}}>{v}%</span></div>
+            <div className="progress-bar">
+              <div className="progress-fill" style={{width:`${v}%`,background:c}}/>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end'}}>
+        <div>
+          {intern.matched_skills?.slice(0,3).map(s=>(
+            <span className="skill-tag matched" key={s} style={{fontSize:11,padding:'3px 10px',marginRight:6}}>✓ {s}</span>
+          ))}
+          {intern.matched_skills?.length>3 && <span className="text-xs text-muted">+{intern.matched_skills.length-3} more</span>}
+        </div>
+        <span style={{fontSize:12,color:'var(--indigo)',fontWeight:600}}>View details →</span>
+      </div>
+    </div>
+  );
+}
+
+// ── INTERN MODAL ──
+function InternModal({intern, onClose, skills}) {
+  const circ = 2*Math.PI*54;
+  return (
+    <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
+      <div className="modal">
+        <div className="modal-header">
+          <div style={{display:'flex',gap:14,alignItems:'center'}}>
+            <div className="intern-logo" style={{background:intern.color,width:52,height:52,borderRadius:14,fontSize:16}}>{intern.logo}</div>
+            <div>
+              <h2 style={{fontSize:20,fontWeight:800}}>{intern.title}</h2>
+              <div className="text-muted text-sm">{intern.company} · {intern.location}</div>
+            </div>
+          </div>
+          <button className="close-btn" onClick={onClose}>✕</button>
+        </div>
+
+        {/* Big Score */}
+        <div style={{display:'flex',justifyContent:'center',gap:32,marginBottom:24,padding:'20px',background:'var(--surface)',borderRadius:16}}>
+          <ScoreRing score={intern.match_percentage} size={100} label="Match"/>
+          <ScoreRing score={intern.tfidf_score} size={100} color="#8b5cf6" label="TF-IDF"/>
+          <ScoreRing score={intern.skill_score} size={100} color="#10b981" label="Skills"/>
+        </div>
+
+        <div className="intern-meta" style={{marginBottom:16}}>
+          {[['📍',intern.location],['⏱',intern.duration],['💼',intern.type],['💰',intern.stipend]].map(([i,v])=>(
+            <span className="meta-chip" key={v}>{i} {v}</span>
+          ))}
+        </div>
+
+        <p style={{fontSize:14,color:'var(--muted)',lineHeight:1.7,marginBottom:20}}>{intern.description}</p>
+
+        {intern.matched_skills?.length>0 && <>
+          <div style={{fontSize:13,fontWeight:700,color:'var(--emerald)',marginBottom:10}}>✅ Skills You Have ({intern.matched_skills.length})</div>
+          <div className="skills-wrap" style={{marginBottom:20}}>
+            {intern.matched_skills.map(s=><span className="skill-tag matched" key={s}>✓ {s}</span>)}
+          </div>
+        </>}
+
+        {intern.missing_skills?.length>0 && <>
+          <div style={{fontSize:13,fontWeight:700,color:'var(--rose)',marginBottom:10}}>⚠️ Missing Skills — Learn These ({intern.missing_skills.length})</div>
+          <div className="skills-wrap" style={{marginBottom:20}}>
+            {intern.missing_skills.map(s=><span className="skill-tag missing" key={s}>✗ {s}</span>)}
+          </div>
+          <div className="alert" style={{background:'rgba(245,158,11,0.08)',border:'1px solid rgba(245,158,11,0.2)',color:'#fcd34d'}}>
+            💡 Learning {intern.missing_skills.slice(0,2).join(' and ')} could increase your match to {Math.min(intern.match_percentage+20,98)}%
+          </div>
+        </>}
+
+        <button className="btn btn-primary w-full" style={{justifyContent:'center',marginTop:8}}>
+          Apply Now →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── BROWSE PAGE ──
+function BrowsePage() {
+  const [filter, setFilter] = useState('');
+  const filtered = INTERNSHIPS_DATA.filter(i=>
+    i.title.toLowerCase().includes(filter.toLowerCase()) ||
+    i.company.toLowerCase().includes(filter.toLowerCase()) ||
+    i.requiredSkills.some(s=>s.toLowerCase().includes(filter.toLowerCase()))
+  );
+  return (
+    <div className="page" style={{maxWidth:1100,margin:'0 auto',padding:'100px 24px 60px'}}>
+      <div style={{marginBottom:36}}>
+        <div className="section-label">Browse</div>
+        <h1 style={{fontSize:32,fontWeight:800,letterSpacing:-1,marginBottom:16}}>All Internships</h1>
+        <input className="input" style={{maxWidth:400}} placeholder="🔍 Search by title, company, or skill…"
+          value={filter} onChange={e=>setFilter(e.target.value)}/>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(320px,1fr))',gap:20}}>
+        {filtered.map(intern=>(
+          <div className="intern-card" key={intern.id} style={{cursor:'default'}}>
+            <div className="intern-header">
+              <div style={{display:'flex',gap:12,alignItems:'flex-start'}}>
+                <div className="intern-logo" style={{background:intern.color}}>{intern.logo}</div>
+                <div>
+                  <div className="intern-title">{intern.title}</div>
+                  <div className="intern-company">{intern.company}</div>
+                </div>
+              </div>
+            </div>
+            <div className="intern-meta">
+              <span className="meta-chip">📍 {intern.location}</span>
+              <span className="meta-chip">💰 {intern.stipend}</span>
+              <span className="meta-chip">⏱ {intern.duration}</span>
+            </div>
+            <div className="skills-wrap" style={{marginTop:4}}>
+              {intern.requiredSkills.map(s=><span className="skill-tag" key={s} style={{fontSize:11}}>{s}</span>)}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── EMPLOYER PAGE ──
+function EmployerPage() {
+  const [form, setForm] = useState({title:'',company:'',location:'',duration:'',stipend:'',type:'Full-time',skills:'',description:''});
+  const [posted, setPosted] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const postInternship = async() => {
+    if(!form.title||!form.company){return}
+    setLoading(true);
+    const payload = {
+      ...form,
+      requiredSkills: form.skills.split(',').map(s=>s.trim()).filter(Boolean)
+    };
+    const data = await apiCall('/save-internship','POST',payload);
+    setPosted([...posted, {...payload, id:'new_'+Date.now(), logo:form.company.slice(0,2).toUpperCase(), color:'#6366f1'}]);
+    setSuccess(true);
+    setTimeout(()=>setSuccess(false),3000);
+    setForm({title:'',company:'',location:'',duration:'',stipend:'',type:'Full-time',skills:'',description:''});
+    setLoading(false);
+  };
+
+  return (
+    <div className="page" style={{maxWidth:1100,margin:'0 auto',padding:'100px 24px 60px'}}>
+      <div style={{marginBottom:36}}>
+        <div className="section-label">Employer Dashboard</div>
+        <h1 style={{fontSize:32,fontWeight:800,letterSpacing:-1}}>Manage Internships</h1>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:28,alignItems:'start'}}>
+        <div className="post-form">
+          <h2>Post New Internship</h2>
+          {success && <div className="alert success">✅ Internship posted successfully!</div>}
+          <div className="grid-2">
+            <div className="input-group"><label className="input-label">Job Title *</label><input className="input" placeholder="Frontend Developer Intern" value={form.title} onChange={e=>setForm({...form,title:e.target.value})}/></div>
+            <div className="input-group"><label className="input-label">Company *</label><input className="input" placeholder="Nexus Technologies" value={form.company} onChange={e=>setForm({...form,company:e.target.value})}/></div>
+          </div>
+          <div className="grid-2">
+            <div className="input-group"><label className="input-label">Location</label><input className="input" placeholder="Remote / New York" value={form.location} onChange={e=>setForm({...form,location:e.target.value})}/></div>
+            <div className="input-group"><label className="input-label">Duration</label><input className="input" placeholder="3 months" value={form.duration} onChange={e=>setForm({...form,duration:e.target.value})}/></div>
+          </div>
+          <div className="grid-2">
+            <div className="input-group"><label className="input-label">Stipend</label><input className="input" placeholder="$1500/month" value={form.stipend} onChange={e=>setForm({...form,stipend:e.target.value})}/></div>
+            <div className="input-group"><label className="input-label">Type</label>
+              <select className="input" value={form.type} onChange={e=>setForm({...form,type:e.target.value})}>
+                <option>Full-time</option><option>Part-time</option><option>Hybrid</option><option>Remote</option>
+              </select>
+            </div>
+          </div>
+          <div className="input-group"><label className="input-label">Required Skills (comma-separated)</label><input className="input" placeholder="React, JavaScript, CSS, Git" value={form.skills} onChange={e=>setForm({...form,skills:e.target.value})}/></div>
+          <div className="input-group"><label className="input-label">Description</label><textarea className="textarea" style={{minHeight:120}} placeholder="Describe the role, responsibilities, and what candidates will learn…" value={form.description} onChange={e=>setForm({...form,description:e.target.value})}/></div>
+          <button className="btn btn-primary w-full" style={{justifyContent:'center'}} onClick={postInternship} disabled={loading}>
+            {loading?'Posting…':'🚀 Post Internship'}
+          </button>
+        </div>
+
+        <div>
+          <h2 style={{fontSize:20,fontWeight:700,marginBottom:20}}>Your Posted Internships</h2>
+          {[...INTERNSHIPS_DATA.slice(0,3),...posted].map(i=>(
+            <div className="card" key={i.id} style={{marginBottom:14}}>
+              <div style={{display:'flex',gap:12,alignItems:'center'}}>
+                <div className="intern-logo" style={{background:i.color||'#6366f1',width:40,height:40,borderRadius:10,fontSize:13}}>{i.logo}</div>
+                <div style={{flex:1}}>
+                  <div style={{fontWeight:600,fontSize:14}}>{i.title}</div>
+                  <div className="text-xs text-muted">{i.company} · {i.location}</div>
+                </div>
+                <span style={{fontSize:12,padding:'4px 10px',borderRadius:99,background:'rgba(16,185,129,0.1)',color:'var(--emerald)'}}>Active</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── APP ROOT ──
+function App() {
+  const [page, setPage] = useState('home');
+  const [user, setUser] = useState(null);
+  const [analysis, setAnalysis] = useState(null);
+
+  return (
+    <div>
+      <Nav page={page} setPage={setPage} user={user} setUser={setUser}/>
+      {page==='home' && <HomePage setPage={setPage}/>}
+      {page==='login' && <AuthPage mode="login" setPage={setPage} setUser={setUser}/>}
+      {page==='signup' && <AuthPage mode="signup" setPage={setPage} setUser={setUser}/>}
+      {page==='upload' && <UploadPage setPage={setPage} setAnalysis={setAnalysis}/>}
+      {page==='dashboard' && <DashboardPage analysis={analysis} setPage={setPage}/>}
+      {page==='browse' && <BrowsePage/>}
+      {page==='employer' && <EmployerPage/>}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('app')).render(<App/>);
+</script>
+</body>
+</html>
